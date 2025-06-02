@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lapozható Carousel</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #ffe100;
+            margin: 0;
+            padding: 0;
+        }
+
+        .section-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 40px;
+            margin-bottom: 40px;
+        }
+
+        .carousel-wrapper {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .carousel-track {
+            display: flex;
+            transition: transform 0.5s ease;
+            touch-action: pan-y; /* Allows horizontal swiping */
+        }
+
+        .carousel-slide {
+            display: flex;
+            flex: 0 0 100%;
+            justify-content: center;
+        }
+
+        .testimonial-card {
+            width: 30%;
+            background: white;
+            margin: 0 10px;
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            min-height: 350px;
+            box-sizing: border-box;
+        }
+
+            .testimonial-card img {
+                width: 90px;
+                height: 90px;
+                border-radius: 50%;
+                object-fit: cover;
+            }
+
+        .name {
+            font-weight: bold;
+            font-size: 18px;
+            margin-top: 10px;
+        }
+
+        .position {
+            background: #111;
+            color: white;
+            padding: 5px 10px;
+            font-size: 14px;
+            margin: 10px 0;
+            display: inline-block;
+        }
+
+        .quote {
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        .arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 40px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #111;
+            z-index: 10;
+        }
+
+            .arrow.left {
+                left: 10px;
+            }
+
+            .arrow.right {
+                right: 10px;
+            }
+
+        @media (max-width: 900px) {
+            .carousel-slide {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .testimonial-card {
+                width: 90%;
+                margin: 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="section-container">
+        <h2>KAPTÁR COWORKINGRŐL MONDTÁTOK</h2>
+
+        <div class="carousel-wrapper">
+            <button class="arrow left" onclick="prevSlide()">&#10094;</button>
+            <div class="carousel-track" id="carouselTrack">
+                <div class="carousel-slide">
+                    <div class="testimonial-card">
+                        <img src="https://via.placeholder.com/90x90?text=M" />
+                        <div class="name">Mirella Frajna</div>
+                        <div class="position">Egyetemi hallgató, ELTE</div>
+                        <div class="quote">A világ legjobb közösségi irodája! Mosollyal nyitnak ajtót...</div>
+                    </div>
+                    <div class="testimonial-card">
+                        <img src="https://via.placeholder.com/90x90?text=B" />
+                        <div class="name">Tóth Bence</div>
+                        <div class="position">Frontend fejlesztő</div>
+                        <div class="quote">Inspiráló környezet, remek emberek. Minden adott a hatékony munkához.</div>
+                    </div>
+                    <div class="testimonial-card">
+                        <img src="https://via.placeholder.com/90x90?text=L" />
+                        <div class="name">Kovács Lilla</div>
+                        <div class="position">Szabadúszó grafikus</div>
+                        <div class="quote">Ez a coworking nem csak iroda, hanem otthon is egyben.</div>
+                    </div>
+                </div>
+
+                <div class="carousel-slide">
+                    <div class="testimonial-card">
+                        <img src="https://via.placeholder.com/90x90?text=G" />
+                        <div class="name">Gábor Varga</div>
+                        <div class="position">Marketing szakember</div>
+                        <div class="quote">Kreatív tér, barátságos emberek. Jó itt dolgozni minden nap!</div>
+                    </div>
+                    <div class="testimonial-card">
+                        <img src="https://via.placeholder.com/90x90?text=Z" />
+                        <div class="name">Zsófi Németh</div>
+                        <div class="position">Projektmenedzser</div>
+                        <div class="quote">Ez a hely teljesen más, mint bármelyik másik iroda – pozitív értelemben!</div>
+                    </div>
+                    <div class="testimonial-card">
+                        <img src="https://via.placeholder.com/90x90?text=J" />
+                        <div class="name">János Veres</div>
+                        <div class="position">Szoftverfejlesztő</div>
+                        <div class="quote">Csendes, mégis társaságban lehetsz. Ritka kombináció, de itt működik.</div>
+                    </div>
+                </div>
+            </div>
+            <button class="arrow right" onclick="nextSlide()">&#10095;</button>
+        </div>
+    </div>
+
+    <script>
+        const track = document.getElementById("carouselTrack");
+        let currentIndex = 0;
+        let startX;
+        let isSwiping = false;
+
+        function updateSlide() {
+            const slideWidth = track.querySelector('.carousel-slide').offsetWidth;
+            track.style.transform = `translateX(-${currentIndex * slideWidth}px)`;
+        }
+
+        function nextSlide() {
+            const slides = track.children.length;
+            currentIndex = (currentIndex + 1) % slides;
+            updateSlide();
+        }
+
+        function prevSlide() {
+            const slides = track.children.length;
+            currentIndex = (currentIndex - 1 + slides) % slides;
+            updateSlide();
+        }
+
+        // --- Swipe functionality ---
+        track.addEventListener('mousedown', (e) => {
+            isSwiping = true;
+            startX = e.clientX;
+            track.style.transition = 'none'; // Disable smooth transition during swipe
+        });
+
+        track.addEventListener('mousemove', (e) => {
+            if (!isSwiping) return;
+            const currentX = e.clientX;
+            const diffX = currentX - startX;
+            const slideWidth = track.querySelector('.carousel-slide').offsetWidth;
+            track.style.transform = `translateX(${-currentIndex * slideWidth + diffX}px)`;
+        });
+
+        track.addEventListener('mouseup', (e) => {
+            if (!isSwiping) return;
+            isSwiping = false;
+            track.style.transition = 'transform 0.5s ease'; // Re-enable smooth transition
+            const endX = e.clientX;
+            const diffX = endX - startX;
+            const slideWidth = track.querySelector('.carousel-slide').offsetWidth;
+
+            if (diffX > slideWidth / 4) { // Swipe right (to previous slide)
+                prevSlide();
+            } else if (diffX < -slideWidth / 4) { // Swipe left (to next slide)
+                nextSlide();
+            } else { // Not enough swipe, snap back
+                updateSlide();
+            }
+        });
+
+        track.addEventListener('mouseleave', () => {
+            if (isSwiping) {
+                isSwiping = false;
+                track.style.transition = 'transform 0.5s ease';
+                updateSlide(); // Snap back if mouse leaves while swiping
+            }
+        });
+
+        // For touch devices
+        track.addEventListener('touchstart', (e) => {
+            isSwiping = true;
+            startX = e.touches[0].clientX;
+            track.style.transition = 'none';
+        });
+
+        track.addEventListener('touchmove', (e) => {
+            if (!isSwiping) return;
+            const currentX = e.touches[0].clientX;
+            const diffX = currentX - startX;
+            const slideWidth = track.querySelector('.carousel-slide').offsetWidth;
+            track.style.transform = `translateX(${-currentIndex * slideWidth + diffX}px)`;
+        });
+
+        track.addEventListener('touchend', (e) => {
+            if (!isSwiping) return;
+            isSwiping = false;
+            track.style.transition = 'transform 0.5s ease';
+            const endX = e.changedTouches[0].clientX;
+            const diffX = endX - startX;
+            const slideWidth = track.querySelector('.carousel-slide').offsetWidth;
+
+            if (diffX > slideWidth / 4) {
+                prevSlide();
+            } else if (diffX < -slideWidth / 4) {
+                nextSlide();
+            } else {
+                updateSlide();
+            }
+        });
+
+        window.addEventListener("resize", updateSlide);
+        window.addEventListener("load", updateSlide);
+    </script>
+
+</body>
+</html>
